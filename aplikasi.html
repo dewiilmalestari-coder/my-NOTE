@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Pastel Estetik ✨</title>
+    <!-- Library untuk efek Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-pastel: #fce4ec;
+            --card-bg: #ffffff;
+            --text-color: #6d4c41;
+            --border-color: #f8bbd0;
+            --input-bg: #fff0f5;
+            --accent-color: #f48fb1;
+            --accent-hover: #f06292;
+        }
+
+        body.dark-mode {
+            --bg-pastel: #2c2128;
+            --card-bg: #3a2e36;
+            --text-color: #f3e5f5;
+            --border-color: #5c4354;
+            --input-bg: #261c22;
+            --accent-color: #ce93d8;
+            --accent-hover: #ba68c8;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-pastel);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.4s ease;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 12px 35px rgba(244, 143, 177, 0.25);
+            width: 450px;
+            transition: 0.3s;
+            border: 2px solid var(--border-color);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-btn {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .toggle-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .progress-container {
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            height: 10px;
+            width: 100%;
+            margin-bottom: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #f48fb1, #ce93d8, #a2d2df);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], select, input[type="datetime-local"] {
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 12px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 6px rgba(244, 143, 177, 0.4);
+        }
+
+        .row-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .row-inputs > * {
+            flex: 1;
+        }
+
+        button.add-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(244, 143, 177, 0.4);
+        }
+        button.add-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        li {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 15px;
+            border: 2px solid var(--border-color);
+            background-color: var(--input-bg);
+            gap: 10px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        li.completed .task-text {
+            text-decoration: line-through;
+            color: #b0bec5;
+        }
+
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .task-text {
+            font-weight: 600;
+            word-break: break-all;
+            font-size: 14px;
+        }
+
+        .task-date {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .badge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .badge.Penting { background-color: #ffcdd2; color: #b71c1c; }
+        .badge.Sedang { background-color: #ffe0b2; color: #e65100; }
+        .badge.Santai { background-color: #c8e6c9; color: #1b5e20; }
+
+        .delete-btn {
+            background: #ff8a80;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .delete-btn:hover { background: #ff5252; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>🌸 Catatan Pastel + Deadline</h2>
+            <button class="toggle-btn" onclick="toggleDarkMode()">🎨 Tema</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Tulis kegiatan baru...">
+            <div class="row-inputs">
+                <select id="priorityInput">
+                    <option value="Santai">☕ Santai</option>
+                    <option value="Sedang">⚡ Sedang</option>
+                    <option value="Penting">🔥 Penting</option>
+                </select>
+                <input type="datetime-local" id="deadlineInput" title="Target Penyelesaian">
+            </div>
+            <button class="add-btn" onclick="addTask()">✨ Tambah Kegiatan</button>
+        </div>
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('pastel_deadline_tasks_v2')) || [];
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Tanpa deadline';
+            const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        function renderTasks() {
+            const ul = document.getElementById('taskList');
+            ul.innerHTML = '';
+
+            let completedCount = 0;
+
+            tasks.forEach((task, index) => {
+                if (task.completed) completedCount++;
+
+                const li = document.createElement('li');
+                if (task.completed) li.classList.add('completed');
+
+                li.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1; overflow: hidden;">
+                        <input type="checkbox" style="transform: scale(1.2); margin-top: 3px; cursor: pointer;" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
+                        <div class="task-info">
+                            <span class="task-text">${task.text}</span>
+                            <span class="task-date">📥 Dibuat: ${task.createdAt}</span>
+                            <span class="task-date" style="color: #e91e63;">⏳ Target: ${formatDate(task.deadline)}</span>
+                        </div>
+                    </div>
+                    <div class="badge-container">
+                        <span class="badge ${task.priority}">${task.priority}</span>
+                        <button class="delete-btn" onclick="deleteTask(${index})">✕ Hapus</button>
+                    </div>
+                `;
+                ul.appendChild(li);
+            });
+
+            const progressBar = document.getElementById('progressBar');
+            if (tasks.length > 0) {
+                const percentage = (completedCount / tasks.length) * 100;
+                progressBar.style.width = percentage + '%';
+
+                if (percentage === 100 && tasks.length > 0) {
+                    confetti({
+                        particleCount: 120,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#f48fb1', '#ce93d8', '#a2d2df', '#ffccbc']
+                    });
+                }
+            } else {
+                progressBar.style.width = '0%';
+            }
+
+            localStorage.setItem('pastel_deadline_tasks_v2', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const priorityInput = document.getElementById('priorityInput');
+            const deadlineInput = document.getElementById('deadlineInput');
+            const text = input.value.trim();
+
+            if (text === '') {
+                alert('Jangan dikosongkan ya, tulis dulu kegiatannya! ✨');
+                return;
+            }
+
+            const now = new Date();
+            const createdString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+            tasks.push({
+                text: text,
+                priority: priorityInput.value,
+                deadline: deadlineInput.value,
+                createdAt: createdString,
+                completed: false
+            });
+
+            input.value = '';
+            deadlineInput.value = '';
+            renderTasks();
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        renderTasks();
+    </script>
+
+</body>
+</html>
